@@ -100,7 +100,7 @@ private
         last if response 
       end
  
-      # puts "AFTER middlewares got env: #{env.to_json}"
+      puts "AFTER middlewares got env: #{env.to_json}"
 
       if not response
 
@@ -136,9 +136,11 @@ private
     url = URI.parse(path)
 
     if method == 'get'
-      path = path + '?' + build_query_string(params) unless params.empty?
-      url = URI.parse(path)
+      # XXX GRUICK but how to do a query string GET req properly ???
+      # http://stackoverflow.com/questions/1252210/parametrized-get-request-in-ruby
       req = Net::HTTP::Get.new(url.path)
+      req.set_form_data(params)
+      req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
     elsif method == 'post'
       req = Net::HTTP::Post.new(url.path)
       req.set_form_data(params)
@@ -159,11 +161,5 @@ private
     end
 
     return res
-  end
-
-  def build_query_string(params)
-    return params.collect { |k,v| 
-      "#{k}=#{CGI::escape(v.to_s)}" 
-    }.join('&')
   end
 end
