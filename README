@@ -1,0 +1,28 @@
+Example:
+
+# some middleware that adds a foo_header to every request
+class MySporeMiddleware < SporeMiddleware
+  def expected_params
+    [ :foo_header ]
+  end
+
+  def process_request(env)
+	env['spore.request_headers].push({
+		:name => 'X-Foo',
+		:value => self.spore_client.foo_header
+	})
+	return nil
+  end
+end
+
+# a basic client
+#!/usr/bin/env ruby
+
+require 'spore'
+require 'my_spore_middleware'
+
+client = Spore.new(my_json_spore_spec_file)
+client.enable(MySporeMiddleware, :foo_header => 'Sp0re Rules!')
+resp = client.some_method_defined_in_the_sepc(:somevar => 42)
+
+# resp is deserialized
