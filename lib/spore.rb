@@ -1,9 +1,5 @@
-
-$:.unshift File.dirname(__FILE__) + "/../vendor/json-1.4.6/lib"
-
 require 'json'
 require 'uri'
-require 'cgi'
 require 'net/http'
 
 class Spore
@@ -139,8 +135,10 @@ private
       # XXX GRUICK but how to do a query string GET req properly ???
       # http://stackoverflow.com/questions/1252210/parametrized-get-request-in-ruby
       req = Net::HTTP::Get.new(url.path)
-      req.set_form_data(params)
-      req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
+      if not params.empty?
+        req.set_form_data(params)
+        req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
+      end
     elsif method == 'post'
       req = Net::HTTP::Post.new(url.path)
       req.set_form_data(params)
