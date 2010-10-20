@@ -40,7 +40,7 @@ class Spore
     self.middlewares = []
   end
 
-  def enable(middleware, args)
+  def enable(middleware, args={})
     m = middleware.new(args)
     self.middlewares.push(m)
   end
@@ -123,7 +123,7 @@ private
 
       # process response with middlewares in reverse orders
       for m in self.middlewares.reverse
-        response = m.process_response(response)
+        response = m.process_response(response, env)
       end
 
       response
