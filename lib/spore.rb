@@ -1,22 +1,38 @@
+require 'rubygems'
 require 'json'
 require 'uri'
 require 'net/http'
+require 'yaml'
 
 class Spore
 
   attr_accessor :name, :author
-  attr_accessor :api_base_url, :api_format, :api_version
+  attr_accessor :base_url, :format, :version
   attr_accessor :methods
   attr_accessor :middlewares
 
   class RequiredParameterExptected < Exception
   end
+  
   class UnexpectedResponse < Exception
+  end
+
+  class UnsupportedSpec < Exception
   end
 
   def initialize(spec)
     if not File.exists?(spec)
       raise Exception, "spec file is invalid: #{spec}"
+    end
+
+    if spec.match(/\.ya?ml/)
+      spec = YAML.load_file(spec)
+    elsif spec.match(/\.json/)
+      file = File.open(spec, 'r')
+      spec = JSON.parse(file.read)
+      file.close
+    else
+      raise UnsupportedSpec, "don't know how to parse '#{spec}'"
     end
 
     inititliaze_api_attrs(spec)
@@ -29,33 +45,28 @@ class Spore
     self.middlewares.push(m)
   end
 
-
 private
 
   def inititliaze_api_attrs(spec)
-    file = File.open(spec, 'r')
-    json = JSON.parse(file.read)
-    file.close
-    self.name = json['name']
-    self.author = json['author']
-    self.api_base_url = json['api_base_url']
-    self.api_format = json['api_format']
-    self.api_version = json['api_version']
-    self.methods = json['methods']
+    self.name = spec['name']
+    self.author = spec['author']
+    self.base_url = spec['base_url'].gsub(/\/$/, '')
+    self.format = spec['format']
+    self.version = spec['version']
+    self.methods = spec['methods']
   end
 
   def construct_client_class(methods)
-    for m in methods
-      define_method(m)
+    for m in methods.keys
+      define_method(m, methods[m])
     end
   end
 
-  def define_method(m)
-    name = m['name']
-    method = m['method']
+  def define_method(name, m)
+    method = m['method'].downcase
     path = m['path']
     params = m['params']
-    required = m['required']
+    required = m['required_params'] || m['required']
     expected = m['expected']
     desc = m['description']
 
@@ -77,7 +88,7 @@ private
         real_path = real_path.gsub(/:#{m[1]}/, args[m[1].to_sym].to_s)
         args.delete(m[1].to_sym)
       end
-      full_path = "#{self.api_base_url}#{real_path}"
+      full_path = "#{self.base_url}#{real_path}"
 
       # build the ENV hash
       env = {}
@@ -88,16 +99,12 @@ private
 
       respone = nil
 
-      # puts "BEFORE middlewares got env: #{env.to_json}"
-
       # call all middlewares
       for m in self.middlewares
         response = m.process_request(env)
         last if response 
       end
  
-      puts "AFTER middlewares got env: #{env.to_json}"
-
       if not response
 
         res = send_http_request(
@@ -107,23 +114,18 @@ private
           env['spore.request_headers'])
 
         # parse the response and make sure we have expected result
-        if not expected.include?(res.code)
+        if expected && (not expected.include?(res.code))
           raise UnexpectedResponse, "response status: '#{res.code}'"
         end
-       
-        if self.api_format == 'json'
-          response = JSON.parse(res.body)
-        end
-      end
 
-      # puts "BEFORE middlewares got response: #{response.to_json}"
+        response = res
+      end
 
       # process response with middlewares in reverse orders
       for m in self.middlewares.reverse
         response = m.process_response(response)
       end
 
-      # puts "AFTER middlewares got response: #{response.to_json}"
       response
     end
   end
