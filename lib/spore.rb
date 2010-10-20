@@ -41,7 +41,7 @@ class Spore
   end
 
   def enable(middleware, args)
-    m = middleware.new(self, args)
+    m = middleware.new(args)
     self.middlewares.push(m)
   end
 
