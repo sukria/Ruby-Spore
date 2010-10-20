@@ -1,20 +1,17 @@
-module Spore
+class Spore
   class Middleware
     
     class ExpectedParam < Exception
     end
 
-    attr_accessor :spore_client 
-
-    def initialize(object, args)
+    def initialize(args)
       for param in self.expected_params
         if not args.has_key?(param)
           raise ExpectedParam, "param '#{param}' is expected"
         end
         
-        self.spore_client = object
-        object.class.send(:attr_accessor, param.to_sym)
-        eval "object.#{param} = args[param]"
+        self.class.send(:attr_accessor, param.to_sym)
+        eval "self.#{param} = args[param]"
       end
     end
 
