@@ -1,0 +1,185 @@
+{
+   "base_url" : "http://github.com/api/v2/",
+   "version" : "0.2",
+   "methods" : {
+      "follow" : {
+         "required_params" : [
+            "user",
+            "format"
+         ],
+         "path" : "/:format/user/follow/:user",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "user_search" : {
+         "required_params" : [
+            "format",
+            "search"
+         ],
+         "path" : "/:format/user/search/:search",
+         "method" : "GET"
+      },
+      "unfollow" : {
+         "required_params" : [
+            "user",
+            "format"
+         ],
+         "path" : "/:format/user/unfollow/:user",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "unwatch_repo" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/unwatch/:user/:repo",
+         "method" : "GET",
+         "authentication" : true
+      },
+      "user_information" : {
+         "required_params" : [
+            "username",
+            "format"
+         ],
+         "path" : "/:format/user/show/:username",
+         "method" : "GET"
+      },
+      "list_public_keys" : {
+         "required_params" : [
+            "format"
+         ],
+         "path" : "/:format/user/keys",
+         "method" : "GET",
+         "authentication" : true
+      },
+      "repos_info" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/:user/:repo",
+         "method" : "GET"
+      },
+      "add_public_key" : {
+         "required_params" : [
+            "format"
+         ],
+         "path" : "/:format/user/key/add",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "fork_repos" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/fork/:user/:repo",
+         "method" : "GET",
+         "authentication" : true
+      },
+      "my_information" : {
+         "required_params" : [
+            "username",
+            "format"
+         ],
+         "path" : "/:format/user/show/:username",
+         "method" : "GET",
+         "authentication" : true
+      },
+      "list_all_repos" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/show/:user",
+         "method" : "GET"
+      },
+      "repos_search" : {
+         "required_params" : [
+            "format",
+            "q"
+         ],
+         "path" : "/:format/repos/search/:q",
+         "method" : "GET"
+      },
+      "update_profile" : {
+         "required_params" : [
+            "username",
+            "format"
+         ],
+         "path" : "/:format/user/show/:username",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "watch_repo" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/watch/:user/:repo",
+         "method" : "GET",
+         "authentication" : true
+      },
+      "create_repo" : {
+         "required_params" : [
+            "format"
+         ],
+         "path" : "/:format/repos/create",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "user_following" : {
+         "required_params" : [
+            "user",
+            "format"
+         ],
+         "path" : "/:format/user/show/:user/following",
+         "method" : "GET"
+      },
+      "set_repo_info" : {
+         "required_params" : [
+            "format",
+            "user",
+            "repo"
+         ],
+         "path" : "/:format/repos/show/:user/:repo",
+         "method" : "POST",
+         "authentication" : true
+      },
+      "watched_repos" : {
+         "required_params" : [
+            "format",
+            "user"
+         ],
+         "path" : "/:format/user/watched/:user",
+         "method" : "GET"
+      },
+      "user_followers" : {
+         "required_params" : [
+            "user",
+            "format"
+         ],
+         "path" : "/:format/user/show/:user/followers",
+         "method" : "GET"
+      },
+      "del_public_key" : {
+         "required_params" : [
+            "format"
+         ],
+         "path" : "/:format/user/key/remove",
+         "method" : "POST",
+         "authentication" : true
+      }
+   },
+   "name" : "GitHub",
+   "authority" : "GITHUB:franckcuny",
+   "meta" : {
+      "documentation" : "http://develop.github.com/"
+   }
+}
