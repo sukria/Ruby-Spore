@@ -23,7 +23,7 @@ class Spore
         [ :format ]
       end
 
-      def process_response(resp)
+      def process_response(resp, env)
         if self.format.downcase == 'json'
           resp.body = JSON.parse(resp.body)
         elsif self.format.match(/\.ya?ml$/i)
