@@ -2,4 +2,5 @@
 *.swp
 rdoc
 doc
+pkg
 *tmproject
