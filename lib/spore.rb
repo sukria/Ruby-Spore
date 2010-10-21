@@ -68,7 +68,7 @@ class Spore
     inititliaze_api_attrs(specs)
     construct_client_class(self.methods)
     self.middlewares = []
-  end
+    end
 
   def enable(middleware, args={})
     m = middleware.new(args)
@@ -91,12 +91,13 @@ class Spore
   #   load_parser(spec_file, options = {})
   #
   # This method takes two arguments spec_file and options<br/>
-  # If spec is a yml or json file options is skipped<br/>
-  # Else options is used for requiring and loading the correct parser<br/><br/>
+  # if spec is a yml or json file options is skipped<br/>
+  # else options is used for requiring and loading the correct parser<br/><br/>
   # options is a Hash with :require and :parser keys.
   # *  :require is a file to require
-  # *  :parser is a String to pass in Object.const_get
+  # *   :parser is a String to pass in Object.const_get
   #
+
   def self.load_parser(spec, options = {})
     case spec
     when /\.ya?ml/
@@ -118,7 +119,6 @@ class Spore
       end
     end
   end
-
 
   private
 
@@ -243,15 +243,12 @@ class Spore
     end
 
     headers.each do |header|
-      #      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
       req.add_field(header[:name], header[:value])
     end
 
-    #    puts "sending request:\n#{req.to_yaml}"
     res = Net::HTTP.new(url.host, url.port).start do |http|
       http.request(req)
     end
-
     return res
   end
 
