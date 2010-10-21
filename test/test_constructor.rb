@@ -4,8 +4,9 @@ class TestConstructor < Test::Unit::TestCase
 
 
   def test_build_fail
-    spore = Spore.new() rescue nil
-    assert_nil spore
+    assert_raise ArgumentError do
+      spore = Spore.new()
+    end
   end
 
   def test_build_github_json
