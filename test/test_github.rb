@@ -1,8 +1,4 @@
-require "rubygems"
-require "test/unit"
-require "spore"
-require 'net/http'
-
+require 'helper'
 require 'spore/middleware/format'
 
 class TestGitHub < Test::Unit::TestCase

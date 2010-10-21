@@ -1,9 +1,5 @@
-require "rubygems"
-require "test/unit"
-require 'net/http'
-require "spore"
+require 'helper'
 require 'spore/middleware/runtime'
-
 class TestRuntime < Test::Unit::TestCase
 
   def test_with_format_github_search

@@ -1,7 +1,4 @@
-require "rubygems"
-require "test/unit"
-require "spore"
-
+require 'helper'
 
 class TestConstructor < Test::Unit::TestCase
 
