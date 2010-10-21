@@ -1,15 +1,5 @@
-= SPORE
-
-Spore is a specification for describing ReST API that can be parsed and used
-automatically by client implementations to communicate with the descibed API
-
-For the SPORE spec please refer to 
-http://github.com/SPORE
-
-A blog entry by Franck Cuny about SPORE, explaining why it makes sense:
-http://lumberjaph.net/misc/2010/10/20/spore-update.html
-
-This project is a Ruby implementation of SPORE.
+= spore
+    Spore is a specification for describing ReST API that can be parsed and used automatically by client implementations to communicate with the descibed API
 
 == Note on Patches/Pull Requests
  
@@ -18,8 +8,7 @@ This project is a Ruby implementation of SPORE.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a
-  commit by itself I can ignore when I pull)
+  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright

@@ -1,5 +1,4 @@
 require 'rubygems'
-gem 'rdoc', '>= 2.5.11'
 require 'rake'
 
 begin
@@ -51,6 +50,4 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "spore #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
-  #rdoc.template = 'darkfish'
-  #rdoc.options += ['-f', 'darkfish']
 end
