@@ -35,27 +35,32 @@ class Spore
   end
 
   ##
-  # Initialize a Spore instance with a specification file
-  # Optionally a file to require the parser and the custom bound Parser class 
+  # Initialize a Spore instance with a specification file<br/>
+  # Optionally a file to require the parser from and the custom bound Parser class 
   #
-  # Spore.new('/tmp/github.json')
+  # :call-seq:
+  #   new(file_path, options = {} )
+  #
+  #   Spore.new('/tmp/github.json')
+  #
   # or
-  # Spore.new('/tmp/spec.dot', :require => 'my_custom_lib', :class => 'DotParser')
+  #
+  #   Spore.new('/tmp/spec.dot', :require => 'my_custom_lib', :class => 'DotParser')
   #
   # DotParser must implement a class method load_file
   #
-  # class DotParser
-  #   def self.load_file(f)
-  #     str = ""
-  #     File.open(f) do |f|
-  #       str = ...
-  #       # Do what you have to here
+  #   class DotParser
+  #     def self.load_file(f)
+  #       str = ""
+  #       File.open(f) do |f|
+  #         str = ...
+  #         # Do what you have to here
+  #       end
   #     end
   #   end
-  # end
   #
-  # :call-seq:
-  #   new(File, Hash)
+
+
   def initialize(spec,options = {})
     @specs = nil
     # Don't load gems that are not needed
