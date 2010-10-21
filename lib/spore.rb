@@ -24,7 +24,7 @@ class Spore
 
   class RequiredParameterExptected < Exception
   end
-  
+
   class UnexpectedResponse < Exception
   end
 
@@ -68,7 +68,7 @@ class Spore
     inititliaze_api_attrs(specs)
     construct_client_class(self.methods)
     self.middlewares = []
-  end
+    end
 
   def enable(middleware, args={})
     m = middleware.new(args)
@@ -86,8 +86,18 @@ class Spore
     })
   end
 
-  # We can provide another parser that implements 
-  # class method MyParser.load_file and returns a specification
+  ##
+  # :call-seq:
+  #   load_parser(spec_file, options = {})
+  #
+  # This method takes two arguments spec_file and options<br/>
+  # if spec is a yml or json file options is skipped<br/>
+  # else options is used for requiring and loading the correct parser<br/><br/>
+  # options is a Hash with :require and :parser keys.
+  # *  :require is a file to require
+  # *   :parser is a String to pass in Object.const_get
+  #
+
   def self.load_parser(spec, options = {})
     case spec
     when /\.ya?ml/
@@ -144,7 +154,7 @@ class Spore
           raise RequiredParameterExptected, "parameter `#{mandatory}' expected"
         end
       end
-      
+
       # build the real path (expand named tokens)
       real_path = path
       while m = real_path.match(/:([^:\/\.]+)/)
@@ -152,7 +162,7 @@ class Spore
           raise RequiredParameterExptected, "named token `#{m[1]}' expected"
         end
         real_path = real_path.gsub(/:#{m[1]}/, args[m[1].to_sym].to_s)
-        args.delete(m[1].to_sym)
+          args.delete(m[1].to_sym)
       end
       full_path = "#{self.base_url}#{real_path}"
 
@@ -172,11 +182,6 @@ class Spore
           break if response 
         end
       end
- 
-      # transoform the SPORE response to a valid HTTPResponse object
-      if response
-        response = to_http(response)
-      end
 
       if not response
 
@@ -186,12 +191,12 @@ class Spore
           env['spore.request_params'],
           env['spore.request_headers'])
 
-        # parse the response and make sure we have expected result
-        if expected && (not expected.include?(res.code.to_i))
-          raise UnexpectedResponse, "response status: '#{res.code}' expected is: #{expected.to_json}"
-        end
+          # parse the response and make sure we have expected result
+          if expected && (not expected.include?(res.code.to_i))
+            raise UnexpectedResponse, "response status: '#{res.code}' expected is: #{expected.to_json}"
+          end
 
-        response = res
+          response = res
       end
 
       # process response with middlewares in reverse orders
@@ -216,54 +221,27 @@ class Spore
         req.set_form_data(params)
         req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
       end
-    elsif method == 'post'
-      req = Net::HTTP::Post.new(url.path)
-      req.set_form_data(params)
-    elsif method == 'put'
-      req = Net::HTTP::Put.new(url.path)
-      req.set_form_data(params)
-    elsif method == 'delete'
-      req = Net::HTTP::Delete.new(url.path)
-      req.set_form_data(params)
-    end
+      elsif method == 'post'
+        req = Net::HTTP::Post.new(url.path)
+        req.set_form_data(params)
+      elsif method == 'put'
+        req = Net::HTTP::Put.new(url.path)
+        req.set_form_data(params)
+      elsif method == 'delete'
+        req = Net::HTTP::Delete.new(url.path)
+        req.set_form_data(params)
+      end
 
-    for header in headers
-#      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
-      req.add_field(header[:name], header[:value])
-    end
+      for header in headers
+        #      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
+        req.add_field(header[:name], header[:value])
+      end
 
-#    puts "sending request:\n#{req.to_yaml}"
-    res = Net::HTTP.new(url.host, url.port).start do |http|
-      http.request(req)
-    end
+      #    puts "sending request:\n#{req.to_yaml}"
+      res = Net::HTTP.new(url.host, url.port).start do |http|
+        http.request(req)
+      end
 
-    return res
+      return res
+    end
   end
-
-  def to_http(spore_resp)
-    return nil if spore_resp.nil?
-    return spore_resp if spore_resp.class != Array
-
-    code    = spore_resp[0]
-    headers = spore_resp[1]
-    body    = spore_resp[2][0]
-
-    if headers.size % 2 != 0
-      raise InvalidHeaders, "Odd number of elements in SPORE headers"
-    end
-  
-    r = Net::HTTPResponse.new('1.1', code, '')  
-    i = 0
-    while i < headers.size
-      header = headers[i]
-      value  = headers[i+1]
-      r.add_field(header, value)
-      i += 2
-    end
-
-    r.body = body if body
-
-    return r
-  end
-
-end
