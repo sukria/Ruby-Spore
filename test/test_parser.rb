@@ -21,7 +21,13 @@ class TestParser < Test::Unit::TestCase
   def test_custom_parser
     file = File.expand_path('../xml_parser.rb', __FILE__)
     spec = File.expand_path('../github.xml',__FILE__)
-    parser = Spore.load_parser(spec, :require => file, :parser => 'MyCustomParser')
+
+    begin
+      parser = Spore.load_parser(spec, :require => file, :parser => 'MyCustomParser')
+    rescue LoadError
+      warn "Can not load XmlSimple gem. Please gem install xml-simple to run this test"
+      return
+    end
     specs = parser.load_file(spec)
     assert_instance_of Hash, specs
     assert specs.has_key?('name')
