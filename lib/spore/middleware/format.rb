@@ -24,9 +24,10 @@ class Spore
       end
 
       def process_response(resp, env)
+
         if self.format.downcase == 'json'
           resp.body = JSON.parse(resp.body)
-        elsif self.format.match(/\.ya?ml$/i)
+        elsif self.format.match(/yaml/)
           resp.body = YAML.load(resp.body)
         else
           raise UnsupportedFormat, "don't know how to handle this format '#{self.format}'"

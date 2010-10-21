@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
 
   s.require_paths = %w[lib]
 
-  s.add_dependency('rubygems')
   s.add_dependency('json')
 
   s.files = %w[
@@ -24,6 +23,7 @@ Gem::Specification.new do |s|
     lib/spore.rb
     lib/spore/middleware.rb
     lib/spore/middleware/runtime.rb
+    lib/spore/middleware/format.rb
   ]
 
   s.test_files = s.files.select { |path| path =~ /^test\/test_.*\.rb/ }

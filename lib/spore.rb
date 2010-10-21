@@ -114,8 +114,8 @@ private
           env['spore.request_headers'])
 
         # parse the response and make sure we have expected result
-        if expected && (not expected.include?(res.code))
-          raise UnexpectedResponse, "response status: '#{res.code}'"
+        if expected && (not expected.include?(res.code.to_i))
+          raise UnexpectedResponse, "response status: '#{res.code}' expected is: #{expected.to_json}"
         end
 
         response = res
@@ -153,9 +153,11 @@ private
     end
 
     for header in headers
+#      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
       req.add_field(header[:name], header[:value])
     end
 
+#    puts "sending request:\n#{req.to_yaml}"
     res = Net::HTTP.new(url.host, url.port).start do |http|
       http.request(req)
     end
