@@ -1,0 +1,87 @@
+<opt name="GitHub" base_url="http://github.com/api/v2/" version="0.2" authority="GITHUB:franckcuny">
+  <methods>
+    <list_public_keys authentication="true" method="GET" path="/:format/user/keys">
+      <required_params>format</required_params>
+    </list_public_keys>
+    <unfollow authentication="true" method="POST" path="/:format/user/unfollow/:user">
+      <required_params>user</required_params>
+      <required_params>format</required_params>
+    </unfollow>
+    <create_repo authentication="true" method="POST" path="/:format/repos/create">
+      <required_params>format</required_params>
+    </create_repo>
+    <user_information method="GET" path="/:format/user/show/:username">
+      <required_params>username</required_params>
+      <required_params>format</required_params>
+    </user_information>
+    <my_information authentication="true" method="GET" path="/:format/user/show/:username">
+      <required_params>username</required_params>
+      <required_params>format</required_params>
+    </my_information>
+    <set_repo_info authentication="true" method="POST" path="/:format/repos/show/:user/:repo">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </set_repo_info>
+    <user_followers method="GET" path="/:format/user/show/:user/followers">
+      <required_params>user</required_params>
+      <required_params>format</required_params>
+    </user_followers>
+    <list_all_repos method="GET" path="/:format/repos/show/:user">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </list_all_repos>
+    <watch_repo authentication="true" method="GET" path="/:format/repos/watch/:user/:repo">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </watch_repo>
+    <repos_info method="GET" path="/:format/repos/:user/:repo">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </repos_info>
+    <follow authentication="true" method="POST" path="/:format/user/follow/:user">
+      <required_params>user</required_params>
+      <required_params>format</required_params>
+    </follow>
+    <fork_repos authentication="true" method="GET" path="/:format/repos/fork/:user/:repo">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </fork_repos>
+    <unwatch_repo authentication="true" method="GET" path="/:format/repos/unwatch/:user/:repo">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+      <required_params>repo</required_params>
+    </unwatch_repo>
+    <add_public_key authentication="true" method="POST" path="/:format/user/key/add">
+      <required_params>format</required_params>
+    </add_public_key>
+    <user_search method="GET" path="/:format/user/search/:search">
+      <required_params>format</required_params>
+      <required_params>search</required_params>
+    </user_search>
+    <user_following method="GET" path="/:format/user/show/:user/following">
+      <required_params>user</required_params>
+      <required_params>format</required_params>
+    </user_following>
+    <watched_repos method="GET" path="/:format/user/watched/:user">
+      <required_params>format</required_params>
+      <required_params>user</required_params>
+    </watched_repos>
+    <del_public_key authentication="true" method="POST" path="/:format/user/key/remove">
+      <required_params>format</required_params>
+    </del_public_key>
+    <repos_search method="GET" path="/:format/repos/search/:q">
+      <required_params>format</required_params>
+      <required_params>q</required_params>
+    </repos_search>
+    <update_profile authentication="true" method="POST" path="/:format/user/show/:username">
+      <required_params>username</required_params>
+      <required_params>format</required_params>
+    </update_profile>
+  </methods>
+  <meta documentation="http://develop.github.com/" />
+</opt>

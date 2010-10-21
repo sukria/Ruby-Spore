@@ -1,0 +1,142 @@
+--- 
+name: GitHub
+methods: 
+  list_public_keys: 
+    authentication: true
+    method: GET
+    path: /:format/user/keys
+    required_params: 
+    - format
+  create_repo: 
+    authentication: true
+    method: POST
+    path: /:format/repos/create
+    required_params: 
+    - format
+  unfollow: 
+    authentication: true
+    method: POST
+    path: /:format/user/unfollow/:user
+    required_params: 
+    - user
+    - format
+  user_information: 
+    method: GET
+    path: /:format/user/show/:username
+    required_params: 
+    - username
+    - format
+  user_followers: 
+    method: GET
+    path: /:format/user/show/:user/followers
+    required_params: 
+    - user
+    - format
+  set_repo_info: 
+    authentication: true
+    method: POST
+    path: /:format/repos/show/:user/:repo
+    required_params: 
+    - format
+    - user
+    - repo
+  my_information: 
+    authentication: true
+    method: GET
+    path: /:format/user/show/:username
+    required_params: 
+    - username
+    - format
+  watch_repo: 
+    authentication: true
+    method: GET
+    path: /:format/repos/watch/:user/:repo
+    required_params: 
+    - format
+    - user
+    - repo
+  list_all_repos: 
+    method: GET
+    path: /:format/repos/show/:user
+    required_params: 
+    - format
+    - user
+    - repo
+  repos_info: 
+    method: GET
+    path: /:format/repos/:user/:repo
+    required_params: 
+    - format
+    - user
+    - repo
+  fork_repos: 
+    authentication: true
+    method: GET
+    path: /:format/repos/fork/:user/:repo
+    required_params: 
+    - format
+    - user
+    - repo
+  follow: 
+    authentication: true
+    method: POST
+    path: /:format/user/follow/:user
+    required_params: 
+    - user
+    - format
+  add_public_key: 
+    authentication: true
+    method: POST
+    path: /:format/user/key/add
+    required_params: 
+    - format
+  unwatch_repo: 
+    authentication: true
+    method: GET
+    path: /:format/repos/unwatch/:user/:repo
+    required_params: 
+    - format
+    - user
+    - repo
+  user_search: 
+    method: GET
+    path: /:format/user/search/:search
+    required_params: 
+    - format
+    - search
+  del_public_key: 
+    authentication: true
+    method: POST
+    path: /:format/user/key/remove
+    required_params: 
+    - format
+  watched_repos: 
+    method: GET
+    path: /:format/user/watched/:user
+    required_params: 
+    - format
+    - user
+  user_following: 
+    method: GET
+    path: /:format/user/show/:user/following
+    required_params: 
+    - user
+    - format
+  update_profile: 
+    authentication: true
+    method: POST
+    path: /:format/user/show/:username
+    required_params: 
+    - username
+    - format
+  repos_search: 
+    method: GET
+    path: /:format/repos/search/:q
+    required_params: 
+    - format
+    - q
+meta: 
+  documentation: http://develop.github.com/
+base_url: http://github.com/api/v2/
+version: "0.2"
+authority: GITHUB:franckcuny
