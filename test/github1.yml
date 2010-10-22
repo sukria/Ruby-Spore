@@ -1,0 +1,14 @@
+--- 
+name: GitHub1
+methods: 
+  list_public_keys: 
+    authentication: true
+    method: GET
+    path: /:format/user/keys
+    required_params: 
+    - format
+meta: 
+  documentation: http://develop.github.com/
+base_url: http://github.com/api/v2/
+version: "0.2"
+authority: GITHUB:franckcuny
