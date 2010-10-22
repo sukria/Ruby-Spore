@@ -28,4 +28,4 @@ Copyright (c) 2010 Weborama. See LICENSE for details.
 
 == Contributors
   - Alexis Sukrieh <sukria@sukria.net>
-  - Hery Ramihajamalala hery@rails-royce.org>
+  - Hery Ramihajamalala <hery@rails-royce.org>
