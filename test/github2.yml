@@ -1,0 +1,15 @@
+--- 
+name: GitHub2
+methods: 
+  list_public_keys: 
+    authentication: true
+    method: GET
+    path: /:format/user/keys/:something_else
+    required_params: 
+    - format
+    - something_else
+meta: 
+  documentation: http://develop.github.com/
+base_url: http://github.com/api/v2/
+version: "0.2"
+authority: GITHUB:franckcuny
