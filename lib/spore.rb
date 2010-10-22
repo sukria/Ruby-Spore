@@ -98,7 +98,7 @@ class Spore
   # else options is used for requiring and loading the correct parser<br/><br/>
   # options is a Hash with :require and :parser keys.
   # *  :require is a file to require
-  # *   :parser is a String to pass in Object.const_get
+  # *  :parser is a String to pass in Object.const_get
   #
 
   def self.load_parser(spec, options = {})
@@ -115,6 +115,7 @@ class Spore
         if options.has_key?(:parser)
           Object.const_get(options[:parser])
         else
+          # Let use the same object as in require
           Object.const_get(options[:require].to_s.capitalize)
         end
       else
@@ -135,8 +136,12 @@ class Spore
     self.methods = spec['methods']
   end
 
+  # FIXME : collapse methods 
+  # Hmmm I think it is not good
+  # If we use Github API and Facebook API in the same project, methods may be overriden
+
   def construct_client_class(methods)
-    for m in methods.keys
+    methods.keys.each do |m|
       define_method(m, methods[m])
     end
   end
