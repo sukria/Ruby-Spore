@@ -42,7 +42,7 @@ class Spore
   #
   # or
   #
-  #   Spore.new('/tmp/spec.dot', :require => 'my_custom_lib', :class => 'DotParser')
+  #   Spore.new('/tmp/spec.dot', :require => 'my_custom_lib', :parser => 'DotParser')
   #
   # DotParser must implement a class method load_file
   #
