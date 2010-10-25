@@ -20,7 +20,6 @@ class Spore
   attr_accessor :base_url, :format, :version
   attr_accessor :methods
   attr_accessor :middlewares
-  attr_reader :specs
 
   class RequiredParameterExptected < Exception
   end
@@ -59,7 +58,6 @@ class Spore
 
 
   def initialize(spec,options = {})
-    @specs = nil
     # Don't load gems that are not needed
     # Only when it requires json, then json is loaded
     parser = self.class.load_parser(spec, options)
