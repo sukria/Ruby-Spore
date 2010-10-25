@@ -24,7 +24,7 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
-  test.options = ['-v']
+  test.options = '--verbose'
 end
 
 begin
