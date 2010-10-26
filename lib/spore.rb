@@ -149,7 +149,8 @@ class Spore
     expected = m['expected']
     desc = m['description']
 
-    Spore.send(:define_method, name) do |args| 
+    mod = Module.new
+    mod.send(:define_method, name) do |args| 
 
       # make sure all mandatory params are sent
       required.each do |mandatory|
@@ -216,6 +217,7 @@ class Spore
 
       response
     end
+    self.extend(mod)
   end
 
   def send_http_request(method, path, params, headers)
