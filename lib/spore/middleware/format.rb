@@ -14,14 +14,17 @@ class Spore
       end
 
       def process_response(resp, env)
-        if resp.code.to_s.match(/^2\d\d/)
 
+        if resp.code.to_s.match(/^2\d\d/)
+          
           # empty string is considered nil object
           if resp.body.to_s.length == 0
             resp.body = nil
             return resp
           end
+          return if resp.nil?
 
+          # non-empty string are deserialized accordingly
           if self.format.downcase == 'json'
             resp.body = JSON.parse(resp.body)
           elsif self.format.match(/yaml/)

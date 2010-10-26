@@ -274,7 +274,6 @@ class Spore
     end
 
     r.body = body if body
-
     return r
   end
 end
