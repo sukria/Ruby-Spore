@@ -19,6 +19,16 @@ class TestGitHub < Test::Unit::TestCase
     end
   end
 
+  def test_github_search_without_mandatory_param
+    @specs.each do |spec|
+      gh = Spore.new(spec)
+
+      assert_raise Spore::RequiredParameterExptected do
+        r = gh.user_search(:format => 'json')
+      end
+    end
+  end
+
   def test_with_format_github_search
     @specs.each do |spec|
       gh = Spore.new(spec)
