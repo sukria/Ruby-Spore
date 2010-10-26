@@ -52,6 +52,4 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "spore #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
-  #rdoc.template = 'darkfish'
-  #rdoc.options += ['-f', 'darkfish']
 end
