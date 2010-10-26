@@ -28,6 +28,7 @@ class TestParser < Test::Unit::TestCase
       warn "Can not load XmlSimple gem. Please gem install xml-simple to run this test"
       return
     end
+    
     specs = parser.load_file(spec)
     assert_instance_of Hash, specs
     assert specs.has_key?('name')

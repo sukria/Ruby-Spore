@@ -20,6 +20,7 @@ class Spore
   attr_accessor :base_url, :format, :version
   attr_accessor :methods
   attr_accessor :middlewares
+  attr_reader :specs
 
   class RequiredParameterExptected < Exception
   end
@@ -28,6 +29,9 @@ class Spore
   end
 
   class UnsupportedSpec < Exception
+  end
+
+  class InvalidHeaders < Exception
   end
 
   ##
@@ -55,8 +59,6 @@ class Spore
   #     end
   #   end
   #
-
-
   def initialize(spec,options = {})
     # Don't load gems that are not needed
     # Only when it requires json, then json is loaded
@@ -66,7 +68,7 @@ class Spore
     inititliaze_api_attrs(specs)
     construct_client_class(self.methods)
     self.middlewares = []
-    end
+  end
 
   def enable(middleware, args={})
     m = middleware.new(args)
@@ -95,7 +97,6 @@ class Spore
   # *  :require is a file to require
   # *  :parser is a String to pass in Object.const_get
   #
-
   def self.load_parser(spec, options = {})
     case spec
     when /\.ya?ml/
@@ -110,7 +111,6 @@ class Spore
         if options.has_key?(:parser)
           Object.const_get(options[:parser])
         else
-          # Let use the same object as in require
           Object.const_get(options[:require].to_s.capitalize)
         end
       else
