@@ -1,0 +1,5 @@
+== TODO List
+
+  * Make more modular
+  * define_method is too long
+  * Implement Spore specs

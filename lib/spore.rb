@@ -91,8 +91,8 @@ class Spore
   #   load_parser(spec_file, options = {})
   #
   # This method takes two arguments spec_file and options<br/>
-  # if spec is a yml or json file options is skipped<br/>
-  # else options is used for requiring and loading the correct parser<br/><br/>
+  # If spec is a yml or json file options is skipped<br/>
+  # Else options is used for requiring and loading the correct parser<br/><br/>
   # options is a Hash with :require and :parser keys.
   # *  :require is a file to require
   # *   :parser is a String to pass in Object.const_get
