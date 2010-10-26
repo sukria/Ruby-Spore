@@ -1,8 +1,6 @@
 require 'rubygems'
-require 'json'
 require 'uri'
 require 'net/http'
-require 'yaml'
 
 # we need to be able to build an HTTPResponse object,
 # and apparently, there's no way to do that outside of the HTTPResponse class
@@ -22,6 +20,7 @@ class Spore
   attr_accessor :base_url, :format, :version
   attr_accessor :methods
   attr_accessor :middlewares
+  attr_reader :specs
 
   class RequiredParameterExptected < Exception
   end
@@ -35,22 +34,36 @@ class Spore
   class InvalidHeaders < Exception
   end
 
-  def initialize(spec)
-    if not File.exists?(spec)
-      raise Exception, "spec file is invalid: #{spec}"
-    end
+  ##
+  # Initialize a Spore instance with a specification file
+  # Optionally a file to require the parser and the custom bound Parser class 
+  #
+  # Spore.new('/tmp/github.json')
+  # or
+  # Spore.new('/tmp/spec.dot', :require => 'my_custom_lib', :class => 'DotParser')
+  #
+  # DotParser must implement a class method load_file
+  #
+  # class DotParser
+  #   def self.load_file(f)
+  #     str = ""
+  #     File.open(f) do |f|
+  #       str = ...
+  #       # Do what you have to here
+  #     end
+  #   end
+  # end
+  #
+  # :call-seq:
+  #   new(File, Hash)
+  def initialize(spec,options = {})
+    @specs = nil
+    # Don't load gems that are not needed
+    # Only when it requires json, then json is loaded
+    parser = self.class.load_parser(spec, options)
+    specs = parser.load_file(spec)
 
-    if spec.match(/\.ya?ml/)
-      spec = YAML.load_file(spec)
-    elsif spec.match(/\.json/)
-      file = File.open(spec, 'r')
-      spec = JSON.parse(file.read)
-      file.close
-    else
-      raise UnsupportedSpec, "don't know how to parse '#{spec}'"
-    end
-
-    inititliaze_api_attrs(spec)
+    inititliaze_api_attrs(specs)
     construct_client_class(self.methods)
     self.middlewares = []
   end
@@ -71,7 +84,32 @@ class Spore
     })
   end
 
-private
+  # We can provide another parser that implements 
+  # class method MyParser.load_file and returns a specification
+  def self.load_parser(spec, options = {})
+    case spec
+    when /\.ya?ml/
+      require('spore/spec_parser/yaml')
+      Spore::SpecParser::Yaml
+    when /\.json/
+      require 'spore/spec_parser/json'
+      Spore::SpecParser::Json
+    else
+      if options.has_key?(:require)
+        require options[:require]
+        if options.has_key?(:parser)
+          Object.const_get(options[:parser])
+        else
+          Object.const_get(options[:require].to_s.capitalize)
+        end
+      else
+        raise UnsupportedSpec, "don't know how to parse '#{spec}'"
+      end
+    end
+  end
+
+
+  private
 
   def inititliaze_api_attrs(spec)
     self.name = spec['name']
