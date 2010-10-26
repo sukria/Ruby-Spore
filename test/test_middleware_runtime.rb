@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'helper'
 require 'spore/middleware/runtime'
 class TestRuntime < Test::Unit::TestCase

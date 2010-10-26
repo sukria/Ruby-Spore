@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'helper'
 require 'spore/spec_parser/yaml'
 require 'spore/spec_parser/json'
