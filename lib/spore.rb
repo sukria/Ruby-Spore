@@ -71,16 +71,16 @@ class Spore
   def enable(middleware, args={})
     m = middleware.new(args)
     self.middlewares.push({
-        :condition => Proc.new { true }, 
-        :middleware => m
+      :condition => Proc.new { true }, 
+      :middleware => m
     })
   end
 
   def enable_if(middleware, args={}, &block)
     m = middleware.new(args)
     self.middlewares.push({
-        :condition => block,
-        :middleware => m
+      :condition => block,
+      :middleware => m
     })
   end
 
@@ -89,8 +89,8 @@ class Spore
   #   load_parser(spec_file, options = {})
   #
   # This method takes two arguments spec_file and options<br/>
-  # if spec is a yml or json file options is skipped<br/>
-  # else options is used for requiring and loading the correct parser<br/><br/>
+  # If spec is a yml or json file options is skipped<br/>
+  # Else options is used for requiring and loading the correct parser<br/><br/>
   # options is a Hash with :require and :parser keys.
   # *  :require is a file to require
   # *  :parser is a String to pass in Object.const_get
@@ -152,7 +152,7 @@ class Spore
     Spore.send(:define_method, name) do |args| 
 
       # make sure all mandatory params are sent
-      for mandatory in required
+      required.each do |mandatory|
         if not args.has_key?(mandatory.to_sym)
           raise RequiredParameterExptected, "parameter `#{mandatory}' expected"
         end
@@ -176,14 +176,19 @@ class Spore
       env['spore.request_params'] = args
       env['spore.request_headers'] = []
 
-      respone = nil
+      response = nil
 
       # call all middlewares
-      for m in self.middlewares
+      self.middlewares.each do |m|
         if m[:condition].call(env)
           response = m[:middleware].process_request(env)
           break if response 
         end
+      end
+
+      # transoform the SPORE response to a valid HTTPResponse object
+      if response
+        response = to_http(response)
       end
 
       if not response
@@ -203,7 +208,7 @@ class Spore
       end
 
       # process response with middlewares in reverse orders
-      for m in self.middlewares.reverse
+      self.middlewares.reverse.each do |m|
         if m[:condition].call(env)
           response = m[:middleware].process_response(response, env)
         end
@@ -217,34 +222,60 @@ class Spore
     url = URI.parse(path)
 
     if method == 'get'
-      # XXX GRUICK but how to do a query string GET req properly ???
+      # XXX GRUICK but how to write a query string GET req properly ???
       # http://stackoverflow.com/questions/1252210/parametrized-get-request-in-ruby
       req = Net::HTTP::Get.new(url.path)
-      if not params.empty?
+      unless params.empty?
         req.set_form_data(params)
         req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
       end
-      elsif method == 'post'
-        req = Net::HTTP::Post.new(url.path)
-        req.set_form_data(params)
-      elsif method == 'put'
-        req = Net::HTTP::Put.new(url.path)
-        req.set_form_data(params)
-      elsif method == 'delete'
-        req = Net::HTTP::Delete.new(url.path)
-        req.set_form_data(params)
-      end
-
-      for header in headers
-        #      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
-        req.add_field(header[:name], header[:value])
-      end
-
-      #    puts "sending request:\n#{req.to_yaml}"
-      res = Net::HTTP.new(url.host, url.port).start do |http|
-        http.request(req)
-      end
-
-      return res
+    elsif method == 'post'
+      req = Net::HTTP::Post.new(url.path)
+      req.set_form_data(params)
+    elsif method == 'put'
+      req = Net::HTTP::Put.new(url.path)
+      req.set_form_data(params)
+    elsif method == 'delete'
+      req = Net::HTTP::Delete.new(url.path)
+      req.set_form_data(params)
     end
+
+    headers.each do |header|
+      #      puts "\nadding header '#{header[:name]}' with '#{header[:value]}'"
+      req.add_field(header[:name], header[:value])
+    end
+
+    #    puts "sending request:\n#{req.to_yaml}"
+    res = Net::HTTP.new(url.host, url.port).start do |http|
+      http.request(req)
+    end
+
+    return res
   end
+
+  def to_http(spore_resp)
+    return nil if spore_resp.nil?
+    return spore_resp if spore_resp.class != Array
+
+    code    = spore_resp[0]
+    headers = spore_resp[1]
+    body    = spore_resp[2][0]
+
+    if headers.size % 2 != 0
+      raise InvalidHeaders, "Odd number of elements in SPORE headers"
+    end
+
+    r = Net::HTTPResponse.new('1.1', code, '')  
+    i = 0
+    while i < headers.size
+      header = headers[i]
+      value  = headers[i+1]
+      r.add_field(header, value)
+      i += 2
+    end
+
+    r.body = body if body
+
+    return r
+  end
+end
