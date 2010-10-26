@@ -24,13 +24,15 @@ class Spore
       end
 
       def process_response(resp, env)
-
-        if self.format.downcase == 'json'
-          resp.body = JSON.parse(resp.body)
-        elsif self.format.match(/yaml/)
-          resp.body = YAML.load(resp.body)
-        else
-          raise UnsupportedFormat, "don't know how to handle this format '#{self.format}'"
+        if resp.code.to_i == 200
+          if self.format.downcase == 'json'
+            resp.body = JSON.parse(resp.body)
+          elsif self.format.match(/yaml/)
+            resp.body = YAML.load(resp.body)
+          else
+            raise UnsupportedFormat, "don't know how to handle this format '#{self.format}'"
+          end
+          return resp
         end
 
         return resp

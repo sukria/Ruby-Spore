@@ -4,6 +4,18 @@ require 'uri'
 require 'net/http'
 require 'yaml'
 
+# we need to be able to build an HTTPResponse object,
+# and apparently, there's no way to do that outside of the HTTPResponse class
+# WTF?
+module Net
+  class HTTPOK
+    def body=(value)
+      @body = value
+    end
+  end
+end
+
+# SPORE
 class Spore
 
   attr_accessor :name, :author
@@ -18,6 +30,9 @@ class Spore
   end
 
   class UnsupportedSpec < Exception
+  end
+
+  class InvalidHeaders < Exception
   end
 
   def initialize(spec)
@@ -42,7 +57,18 @@ class Spore
 
   def enable(middleware, args={})
     m = middleware.new(args)
-    self.middlewares.push(m)
+    self.middlewares.push({
+        :condition => Proc.new { true }, 
+        :middleware => m
+    })
+  end
+
+  def enable_if(middleware, args={}, &block)
+    m = middleware.new(args)
+    self.middlewares.push({
+        :condition => block,
+        :middleware => m
+    })
   end
 
 private
@@ -101,10 +127,17 @@ private
 
       # call all middlewares
       for m in self.middlewares
-        response = m.process_request(env)
-        last if response 
+        if m[:condition].call(env)
+          response = m[:middleware].process_request(env)
+          break if response 
+        end
       end
  
+      # transoform the SPORE response to a valid HTTPResponse object
+      if response
+        response = to_http(response)
+      end
+
       if not response
 
         res = send_http_request(
@@ -123,7 +156,9 @@ private
 
       # process response with middlewares in reverse orders
       for m in self.middlewares.reverse
-        response = m.process_response(response, env)
+        if m[:condition].call(env)
+          response = m[:middleware].process_response(response, env)
+        end
       end
 
       response
@@ -164,4 +199,31 @@ private
 
     return res
   end
+
+  def to_http(spore_resp)
+    return nil if spore_resp.nil?
+    return spore_resp if spore_resp.class != Array
+
+    code    = spore_resp[0]
+    headers = spore_resp[1]
+    body    = spore_resp[2][0]
+
+    if headers.size % 2 != 0
+      raise InvalidHeaders, "Odd number of elements in SPORE headers"
+    end
+  
+    r = Net::HTTPResponse.new('1.1', code, '')  
+    i = 0
+    while i < headers.size
+      header = headers[i]
+      value  = headers[i+1]
+      r.add_field(header, value)
+      i += 2
+    end
+
+    r.body = body if body
+
+    return r
+  end
+
 end
