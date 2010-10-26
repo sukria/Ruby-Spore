@@ -8,7 +8,7 @@ require 'yaml'
 # and apparently, there's no way to do that outside of the HTTPResponse class
 # WTF?
 module Net
-  class HTTPOK
+  class HTTPResponse
     def body=(value)
       @body = value
     end

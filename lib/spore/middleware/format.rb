@@ -2,16 +2,6 @@ require 'json'
 require 'yaml'
 require 'spore/middleware'
 
-# I don't like to do that, but we have to monkeypatch the class of Net::HTTPOK
-# because we can't overwrite its body attribute otherwise
-module Net
-  class HTTPOK
-    def body=(value)
-      @body = value
-    end
-  end
-end
-
 class Spore
   class Middleware
     class Format < Spore::Middleware
@@ -24,7 +14,7 @@ class Spore
       end
 
       def process_response(resp, env)
-        if resp.code.to_i == 200
+        if resp.code.to_s.match(/^2\d\d/)
           if self.format.downcase == 'json'
             resp.body = JSON.parse(resp.body)
           elsif self.format.match(/yaml/)
