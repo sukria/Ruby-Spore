@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rubygems'
 gem 'rdoc', '>= 2.5.11'
 require 'rake'
