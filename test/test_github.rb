@@ -14,8 +14,9 @@ class TestGitHub < Test::Unit::TestCase
       gh = Spore.new(spec)
 
       r = gh.user_search(:format => 'json', :search => 'sukria')
-      assert_kind_of Net::HTTPOK, r
-      assert_kind_of String, r.body
+      assert_kind_of HTTP::Message, r
+      assert_equal r.status, 200
+      assert_kind_of String, r.body.content
     end
   end
 
@@ -38,7 +39,8 @@ class TestGitHub < Test::Unit::TestCase
       assert_equal 1, gh.middlewares.size
 
       r = gh.user_search(:format => 'json', :search => 'sukria')
-      assert_kind_of Net::HTTPOK, r
+      assert_kind_of HTTP::Message, r
+      assert_equal r.status, 200
       assert_kind_of Hash, r.body
       assert_equal 'sukria', r.body['users'][0]['name']
     end

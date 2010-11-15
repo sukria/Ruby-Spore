@@ -9,7 +9,8 @@ class Spore
 
       def process_response(resp, env)
         elapsed_time = Time.now - env['sporex.runtime.start']
-        resp.add_field('X-Spore-Runtime', elapsed_time.to_s)
+
+        resp.header['X-Spore-Runtime'] = elapsed_time
         return resp
       end
     end

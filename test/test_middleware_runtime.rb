@@ -10,9 +10,11 @@ class TestRuntime < Test::Unit::TestCase
     assert_equal 1, gh.middlewares.size
 
     r = gh.user_search(:format => 'json', :search => 'sukria')
-    assert_kind_of Net::HTTPOK, r
-    assert_not_nil r['X-Spore-Runtime']
-    assert r['X-Spore-Runtime'].to_f > 0.00001
+    assert_kind_of HTTP::Message, r
+    assert_equal r.status, 200
+
+    assert_not_nil r.header['X-Spore-Runtime'][0]
+    assert r.header['X-Spore-Runtime'][0] > 0.00001
   end
 
 end
