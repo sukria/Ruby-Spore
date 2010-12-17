@@ -2,12 +2,13 @@
 require 'rubygems'
 require 'uri'
 require 'net/http'
+require 'httpclient'
 
 # we need to be able to build an HTTPResponse object,
 # and apparently, there's no way to do that outside of the HTTPResponse class
 # WTF?
-module Net
-  class HTTPResponse
+module HTTP
+  class Message
     def body=(value)
       @body = value
     end
@@ -71,6 +72,21 @@ class Spore
     self.middlewares = []
     end
 
+  ##
+  # :call-seq:
+  #   spore.enable(Spore::Middleware::SomeThing, :optionX => 42)
+  # 
+  # This method takes a middleware class as its first argument.
+  # Options to pass to the middleware can be given as a second
+  # argument.
+  # Once this method is called, the Spore client will pass the request
+  # and the response objects to the middleware whenever appropriate.
+  # The order in which middlewares are enabled is respected by Spore.
+  # (same order for processing the request before it's sent, reverse
+  # order for processing response, as described in the Spore
+  # specification).
+  #
+
   def enable(middleware, args={})
     m = middleware.new(args)
     self.middlewares.push({
@@ -79,6 +95,18 @@ class Spore
     })
   end
 
+  ##
+  # :call-seq:
+  #   spore.enable_if(Spore::Middleware::SomeThing, :optionX => 42) do |env| {
+  #     # return true or false, depending on env to say if the
+  #     # middleware should be enabled or not for this request
+  # }
+  # 
+  # Same as the enable method, but is enabled dynamically, depending
+  # of the current request env.
+  # A block is given and is passed the env stack, it should return a
+  # boolean value to tell if the middleware should be enabled or not.
+  # 
   def enable_if(middleware, args={}, &block)
     m = middleware.new(args)
     self.middlewares.push({
@@ -222,35 +250,41 @@ class Spore
   end
 
   def send_http_request(method, path, params, headers)
-    url = URI.parse(path)
+  
+    # our HttpClient object
+    client = HTTPClient.new
 
+    # normalize our headers for HttpClient
+    h = []
+    headers.each do |header|
+      h.push([header[:name], header[:value]])
+    end
+  
+    # the response object we expect to have
+    resp = nil
+    
     if method == 'get'
-      # XXX GRUICK but how to write a query string GET req properly ???
-      # http://stackoverflow.com/questions/1252210/parametrized-get-request-in-ruby
+      # some dirty hack to get a nice query_string with req.body
+      url = URI.parse(path)
       req = Net::HTTP::Get.new(url.path)
       unless params.empty?
         req.set_form_data(params)
         req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
       end
+      resp = client.get(path, req.body, h)
+
     elsif method == 'post'
-      req = Net::HTTP::Post.new(url.path)
-      req.set_form_data(params)
+      resp = client.post(path, params, h)
+
     elsif method == 'put'
-      req = Net::HTTP::Put.new(url.path)
-      req.set_form_data(params)
+      resp = client.put(path, params, h)
+
     elsif method == 'delete'
-      req = Net::HTTP::Delete.new(url.path)
-      req.set_form_data(params)
+      resp = client.delete(path, params, h)
+
     end
 
-    headers.each do |header|
-      req.add_field(header[:name], header[:value])
-    end
-
-    res = Net::HTTP.new(url.host, url.port).start do |http|
-      http.request(req)
-    end
-    return res
+    return resp
   end
 
   def to_http(spore_resp)

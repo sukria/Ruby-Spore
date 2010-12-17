@@ -15,21 +15,21 @@ class Spore
       end
 
       def process_response(resp, env)
+        return if resp.nil?
 
         if resp.code.to_s.match(/^2\d\d/)
           
           # empty string is considered nil object
-          if resp.body.to_s.length == 0
+          if resp.body.content.length == 0
             resp.body = nil
             return resp
           end
-          return if resp.nil?
 
           # non-empty string are deserialized accordingly
           if self.format.downcase == 'json'
-            resp.body = JSON.parse(resp.body)
+            resp.body = JSON.parse(resp.body.content)
           elsif self.format.match(/yaml/)
-            resp.body = YAML.load(resp.body)
+            resp.body = YAML.load(resp.body.content)
           else
             raise UnsupportedFormat, "don't know how to handle this format '#{self.format}'"
           end
