@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rubygems'
 gem 'rdoc', '>= 2.5.11'
 require 'rake'
@@ -34,6 +35,7 @@ begin
     test.libs << 'test'
     test.pattern = 'test/**/test_*.rb'
     test.verbose = true
+    test.rcov_opts += ["--exclude /gems/"]
   end
 rescue LoadError
   task :rcov do

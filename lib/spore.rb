@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rubygems'
 require 'uri'
 require 'net/http'
@@ -248,40 +249,16 @@ class Spore
     self.extend(mod)
   end
 
-  def send_http_request(method, path, params, headers)
+  def send_http_request(method_name, path, params, headers)
   
     # our HttpClient object
     client = HTTPClient.new
 
     # normalize our headers for HttpClient
-    h = []
-    headers.each do |header|
-      h.push([header[:name], header[:value]])
-    end
+    h = headers.map{|header| header.values_at(:name,:value)}
   
     # the response object we expect to have
-    resp = nil
-    
-    if method == 'get'
-      # some dirty hack to get a nice query_string with req.body
-      url = URI.parse(path)
-      req = Net::HTTP::Get.new(url.path)
-      unless params.empty?
-        req.set_form_data(params)
-        req = Net::HTTP::Get.new( url.path+ '?' + req.body ) 
-      end
-      resp = client.get(path, req.body, h)
-
-    elsif method == 'post'
-      resp = client.post(path, params, h)
-
-    elsif method == 'put'
-      resp = client.put(path, params, h)
-
-    elsif method == 'delete'
-      resp = client.delete(path, params, h)
-
-    end
+    resp = client.send(method_name,path, params, h) if method_name =~ %r{get|post|put|delete}
 
     return resp
   end
