@@ -22,7 +22,7 @@ class Spore
   attr_accessor :base_url, :format, :version
   attr_accessor :methods
   attr_accessor :middlewares
-  attr_reader :specs
+  attr_reader :specs, :config
 
   class RequiredParameterExptected < Exception
   end
@@ -63,14 +63,16 @@ class Spore
   #
   def initialize(spec,options = {})
     # Don't load gems that are not needed
-    # Only when it requires json, then json is loaded
+    # Only When it requires json, then json is loaded
     parser = self.class.load_parser(spec, options)
+    @config = options[:client_config] || {:ssl_verify_mode =>  OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT }
+      
     specs = parser.load_file(spec)
 
     inititliaze_api_attrs(specs)
     construct_client_class(self.methods)
     self.middlewares = []
-    end
+  end
 
   ##
   # :call-seq:
@@ -253,6 +255,7 @@ class Spore
   
     # our HttpClient object
     client = HTTPClient.new
+    client.ssl_config.verify_mode = @config[:ssl_verify_mode]
 
     # normalize our headers for HttpClient
     h = headers.map{|header| header.values_at(:name,:value)}
